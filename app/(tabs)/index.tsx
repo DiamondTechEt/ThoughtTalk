@@ -19,7 +19,7 @@ import { useThoughts } from '@/hooks/useThoughts';
 export default function FeedScreen() {
   const colorScheme = useColorScheme();
   const { user } = useAuth();
-  const { thoughts, loading, refreshThoughts } = useThoughts();
+  // const { thoughts, loading, refreshThoughts } = useThoughts();
   const { thoughts, loading, refreshThoughts } = useThoughts(user?.id);
   const [refreshing, setRefreshing] = useState(false);
   const [showEditor, setShowEditor] = useState(false);

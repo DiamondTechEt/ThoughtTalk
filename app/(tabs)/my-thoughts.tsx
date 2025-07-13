@@ -18,7 +18,6 @@ import { useMyThoughts } from '@/hooks/useMyThoughts';
 export default function MyThoughtsScreen() {
   const colorScheme = useColorScheme();
   const { user } = useAuth();
-  const { thoughts, loading, refreshThoughts } = useMyThoughts();
   const { thoughts, loading, refreshThoughts } = useMyThoughts(user?.id);
   const [showEditor, setShowEditor] = useState(false);
   const [editingThought, setEditingThought] = useState(null);
