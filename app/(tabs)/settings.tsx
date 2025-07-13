@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Moon, Sun, Monitor, LogOut, Edit3 } from 'lucide-react-native';
+import { User, Moon, Sun, Monitor, LogOut, CreditCard as Edit3 } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileEditor } from '@/components/ProfileEditor';
 

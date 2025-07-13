@@ -7,7 +7,7 @@ import {
   useColorScheme,
   Alert,
 } from 'react-native';
-import { Heart, MessageCircle, Share, Edit3, Trash2, User } from 'lucide-react-native';
+import { Heart, MessageCircle, Share, CreditCard as Edit3, Trash2, User } from 'lucide-react-native';
 import { formatDistanceToNow } from '@/utils/dateUtils';
 import { prisma } from '@/lib/prisma';
 import { CommentModal } from './CommentModal';
