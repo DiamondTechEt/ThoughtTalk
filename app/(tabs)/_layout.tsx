@@ -6,11 +6,11 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   
   const tabBarOptions = {
-    activeTintColor: '#3B82F6',
+    activeTintColor: '#6366F1',
     inactiveTintColor: colorScheme === 'dark' ? '#9CA3AF' : '#6B7280',
     style: {
-      backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-      borderTopColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
+      backgroundColor: colorScheme === 'dark' ? '#1E1E1E' : '#FFFFFF',
+      borderTopColor: colorScheme === 'dark' ? '#2D2D2D' : '#E5E7EB',
       borderTopWidth: 1,
     },
   };

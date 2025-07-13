@@ -19,6 +19,7 @@ export default function MyThoughtsScreen() {
   const colorScheme = useColorScheme();
   const { user } = useAuth();
   const { thoughts, loading, refreshThoughts } = useMyThoughts();
+  const { thoughts, loading, refreshThoughts } = useMyThoughts(user?.id);
   const [showEditor, setShowEditor] = useState(false);
   const [editingThought, setEditingThought] = useState(null);
 
@@ -115,7 +116,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#111827' : '#F9FAFB',
+      backgroundColor: isDark ? '#121212' : '#F9FAFB',
     },
     header: {
       padding: 20,
@@ -124,7 +125,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     headerTitle: {
       fontSize: 28,
       fontWeight: '700',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       marginBottom: 4,
     },
     headerSubtitle: {
@@ -135,7 +136,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     createButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#3B82F6',
+      backgroundColor: '#6366F1',
       paddingHorizontal: 16,
       paddingVertical: 12,
       borderRadius: 12,
@@ -169,7 +170,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     emptyStateText: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       marginBottom: 8,
     },
     emptyStateSubtext: {

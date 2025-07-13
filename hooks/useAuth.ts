@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { authenticateUser, createUser, getUserById, generateToken, verifyToken } from '@/lib/auth';
+import { storeToken, getToken, removeToken } from '@/lib/storage';
 
 interface User {
   id: string;
@@ -20,32 +22,47 @@ export function useAuth(): AuthState {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Check for existing auth session
-    // For now, simulate a user being logged in
-    setTimeout(() => {
-      setUser({
-        id: '1',
-        email: 'user@example.com',
-        displayName: 'Demo User',
-        bio: 'This is a demo profile for ThoughtLine',
-      });
-      setLoading(false);
-    }, 1000);
+    checkAuthState();
   }, []);
+
+  const checkAuthState = async () => {
+    try {
+      const token = await getToken();
+      if (token) {
+        const decoded = verifyToken(token);
+        if (decoded) {
+          const userData = await getUserById(decoded.userId);
+          if (userData) {
+            setUser(userData);
+          } else {
+            await removeToken();
+          }
+        } else {
+          await removeToken();
+        }
+      }
+    } catch (error) {
+      console.error('Error checking auth state:', error);
+      await removeToken();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // TODO: Implement actual sign in
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const userData = await authenticateUser(email, password);
+      if (!userData) {
+        throw new Error('Invalid email or password');
+      }
       
-      setUser({
-        id: '1',
-        email,
-        displayName: 'Demo User',
-      });
+      const token = generateToken(userData.id);
+      await storeToken(token);
+      
+      setUser(userData);
     } catch (error) {
-      throw new Error('Sign in failed');
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -54,16 +71,16 @@ export function useAuth(): AuthState {
   const signUp = async (email: string, password: string, displayName?: string) => {
     try {
       setLoading(true);
-      // TODO: Implement actual sign up
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const userData = await createUser(email, password, displayName);
+      const token = generateToken(userData.id);
+      await storeToken(token);
       
-      setUser({
-        id: '1',
-        email,
-        displayName: displayName || 'New User',
-      });
+      setUser(userData);
     } catch (error) {
-      throw new Error('Sign up failed');
+      if (error instanceof Error && error.message.includes('Unique constraint')) {
+        throw new Error('An account with this email already exists');
+      }
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -72,12 +89,11 @@ export function useAuth(): AuthState {
   const signOut = async () => {
     try {
       setLoading(true);
-      // TODO: Implement actual sign out
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await removeToken();
       
       setUser(null);
     } catch (error) {
-      throw new Error('Sign out failed');
+      console.error('Error signing out:', error);
     } finally {
       setLoading(false);
     }

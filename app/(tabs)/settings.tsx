@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Moon, Sun, Monitor, LogOut, CreditCard as Edit3 } from 'lucide-react-native';
+import { User, Moon, Sun, Monitor, LogOut, Edit3 } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileEditor } from '@/components/ProfileEditor';
 
@@ -72,7 +72,7 @@ export default function SettingsScreen() {
               style={styles.editButton}
               onPress={() => setShowProfileEditor(true)}
             >
-              <Edit3 size={20} color="#3B82F6" />
+              <Edit3 size={20} color="#6366F1" />
             </TouchableOpacity>
           </View>
         </View>
@@ -95,7 +95,7 @@ export default function SettingsScreen() {
                 >
                   <IconComponent
                     size={24}
-                    color={isSelected ? '#3B82F6' : (colorScheme === 'dark' ? '#9CA3AF' : '#6B7280')}
+                    color={isSelected ? '#6366F1' : (colorScheme === 'dark' ? '#E5E7EB' : '#374151')}
                   />
                   <Text style={[
                     styles.themeOptionText,
@@ -133,7 +133,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#111827' : '#F9FAFB',
+      backgroundColor: isDark ? '#121212' : '#F9FAFB',
     },
     scrollView: {
       flex: 1,
@@ -145,7 +145,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     headerTitle: {
       fontSize: 28,
       fontWeight: '700',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
     },
     section: {
       marginBottom: 24,
@@ -154,11 +154,11 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     sectionTitle: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       marginBottom: 12,
     },
     profileCard: {
-      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+      backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
       borderRadius: 12,
       padding: 16,
       flexDirection: 'row',
@@ -174,7 +174,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       width: 64,
       height: 64,
       borderRadius: 32,
-      backgroundColor: isDark ? '#374151' : '#F3F4F6',
+      backgroundColor: isDark ? '#2D2D2D' : '#E5E7EB',
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: 16,
@@ -185,7 +185,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     displayName: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       marginBottom: 4,
     },
     email: {
@@ -195,7 +195,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     },
     bio: {
       fontSize: 14,
-      color: isDark ? '#D1D5DB' : '#374151',
+      color: isDark ? '#F9FAFB' : '#111827',
     },
     editButton: {
       padding: 8,
@@ -206,7 +206,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     },
     themeOption: {
       flex: 1,
-      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+      backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
       borderRadius: 12,
       padding: 16,
       alignItems: 'center',
@@ -214,7 +214,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       borderColor: 'transparent',
     },
     themeOptionSelected: {
-      borderColor: '#3B82F6',
+      borderColor: '#6366F1',
     },
     themeOptionText: {
       fontSize: 14,
@@ -223,12 +223,12 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       marginTop: 8,
     },
     themeOptionTextSelected: {
-      color: '#3B82F6',
+      color: '#6366F1',
     },
     signOutButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+      backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
       borderRadius: 12,
       padding: 16,
       justifyContent: 'center',

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Check } from 'lucide-react-native';
+import { prisma } from '@/lib/prisma';
 
 interface ProfileEditorProps {
   visible: boolean;
@@ -36,16 +37,24 @@ export function ProfileEditor({ visible, user, onClose }: ProfileEditorProps) {
   }, [visible, user]);
 
   const handleSave = async () => {
+    if (!user) return;
+
     try {
       setIsSaving(true);
       
-      // TODO: Implement profile update API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          displayName: displayName.trim() || null,
+          bio: bio.trim() || null,
+        },
+      });
       
       Alert.alert('Success', 'Profile updated successfully!');
       onClose();
     } catch (error) {
       Alert.alert('Error', 'Failed to update profile. Please try again.');
+      console.error('Error updating profile:', error);
     } finally {
       setIsSaving(false);
     }
@@ -144,7 +153,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#111827' : '#FFFFFF',
+      backgroundColor: isDark ? '#121212' : '#FFFFFF',
     },
     keyboardContainer: {
       flex: 1,
@@ -155,7 +164,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       justifyContent: 'space-between',
       padding: 16,
       borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#374151' : '#E5E7EB',
+      borderBottomColor: isDark ? '#2D2D2D' : '#E5E7EB',
     },
     headerButton: {
       width: 40,
@@ -172,7 +181,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     headerTitle: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
     },
     form: {
       flex: 1,
@@ -184,17 +193,17 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     label: {
       fontSize: 16,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       marginBottom: 8,
     },
     input: {
       borderWidth: 1,
-      borderColor: isDark ? '#374151' : '#D1D5DB',
+      borderColor: isDark ? '#2D2D2D' : '#E5E7EB',
       borderRadius: 8,
       padding: 12,
       fontSize: 16,
-      color: isDark ? '#FFFFFF' : '#111827',
-      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+      color: isDark ? '#F9FAFB' : '#111827',
+      backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
     },
     bioInput: {
       height: 100,

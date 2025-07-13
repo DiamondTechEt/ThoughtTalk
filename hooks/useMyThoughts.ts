@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { prisma } from '@/lib/prisma';
 
 interface Thought {
   id: string;
@@ -9,37 +10,46 @@ interface Thought {
   commentCount: number;
 }
 
-export function useMyThoughts() {
+export function useMyThoughts(userId?: string) {
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refreshThoughts = async () => {
+    if (!userId) {
+      setThoughts([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      // TODO: Implement actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock data for current user's thoughts
-      const mockThoughts: Thought[] = [
-        {
-          id: '4',
-          content: 'Building ThoughtLine has been an incredible journey. Sometimes the simplest ideas are the most powerful.',
-          userId: '1',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(), // 1 hour ago
-          likeCount: 5,
-          commentCount: 2,
+      const thoughtsData = await prisma.thought.findMany({
+        where: {
+          userId: userId,
         },
-        {
-          id: '5',
-          content: 'The minimalist approach to social media might be exactly what we need in this age of information overload.',
-          userId: '1',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-          likeCount: 18,
-          commentCount: 4,
+        include: {
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            },
+          },
         },
-      ];
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
       
-      setThoughts(mockThoughts);
+      const formattedThoughts: Thought[] = thoughtsData.map(thought => ({
+        id: thought.id,
+        content: thought.content,
+        userId: thought.userId,
+        createdAt: thought.createdAt.toISOString(),
+        likeCount: thought._count.likes,
+        commentCount: thought._count.comments,
+      }));
+      
+      setThoughts(formattedThoughts);
     } catch (error) {
       console.error('Failed to fetch my thoughts:', error);
     } finally {
@@ -49,7 +59,7 @@ export function useMyThoughts() {
 
   useEffect(() => {
     refreshThoughts();
-  }, []);
+  }, [userId]);
 
   return {
     thoughts,

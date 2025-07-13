@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Check } from 'lucide-react-native';
+import { prisma } from '@/lib/prisma';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ThoughtEditorProps {
   visible: boolean;
@@ -22,6 +24,7 @@ interface ThoughtEditorProps {
 
 export function ThoughtEditor({ visible, thought, onClose }: ThoughtEditorProps) {
   const colorScheme = useColorScheme();
+  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -36,6 +39,11 @@ export function ThoughtEditor({ visible, thought, onClose }: ThoughtEditorProps)
   }, [visible, thought]);
 
   const handleSave = async () => {
+    if (!user) {
+      Alert.alert('Error', 'You must be signed in to save thoughts.');
+      return;
+    }
+
     if (!content.trim()) {
       Alert.alert('Error', 'Please enter some content for your thought.');
       return;
@@ -49,12 +57,24 @@ export function ThoughtEditor({ visible, thought, onClose }: ThoughtEditorProps)
     try {
       setIsSaving(true);
       
-      // TODO: Implement save API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      if (isEditing) {
+        await prisma.thought.update({
+          where: { id: thought.id },
+          data: { content: content.trim() },
+        });
+      } else {
+        await prisma.thought.create({
+          data: {
+            content: content.trim(),
+            userId: user.id,
+          },
+        });
+      }
       
       onClose();
     } catch (error) {
       Alert.alert('Error', 'Failed to save thought. Please try again.');
+      console.error('Error saving thought:', error);
     } finally {
       setIsSaving(false);
     }
@@ -150,7 +170,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#111827' : '#FFFFFF',
+      backgroundColor: isDark ? '#121212' : '#FFFFFF',
     },
     keyboardContainer: {
       flex: 1,
@@ -161,7 +181,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       justifyContent: 'space-between',
       padding: 16,
       borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#374151' : '#E5E7EB',
+      borderBottomColor: isDark ? '#2D2D2D' : '#E5E7EB',
     },
     headerButton: {
       width: 40,
@@ -178,7 +198,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
     headerTitle: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
     },
     editorContainer: {
       flex: 1,
@@ -188,7 +208,7 @@ function createStyles(colorScheme: 'light' | 'dark' | null) {
       flex: 1,
       fontSize: 18,
       lineHeight: 26,
-      color: isDark ? '#FFFFFF' : '#111827',
+      color: isDark ? '#F9FAFB' : '#111827',
       textAlignVertical: 'top',
     },
     footer: {
