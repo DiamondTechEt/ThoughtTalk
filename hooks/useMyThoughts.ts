@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { prisma } from '@/lib/prisma';
+import { thoughtsAPI } from '@/lib/api';
 
 interface Thought {
   id: string;
@@ -23,33 +23,8 @@ export function useMyThoughts(userId?: string) {
 
     try {
       setLoading(true);
-      const thoughtsData = await prisma.thought.findMany({
-        where: {
-          userId: userId,
-        },
-        include: {
-          _count: {
-            select: {
-              likes: true,
-              comments: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-      
-      const formattedThoughts: Thought[] = thoughtsData.map(thought => ({
-        id: thought.id,
-        content: thought.content,
-        userId: thought.userId,
-        createdAt: thought.createdAt.toISOString(),
-        likeCount: thought._count.likes,
-        commentCount: thought._count.comments,
-      }));
-      
-      setThoughts(formattedThoughts);
+      const thoughtsData = await thoughtsAPI.getByUser(userId);
+      setThoughts(thoughtsData);
     } catch (error) {
       console.error('Failed to fetch my thoughts:', error);
     } finally {

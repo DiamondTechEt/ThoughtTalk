@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Send, User } from 'lucide-react-native';
 import { formatDistanceToNow } from '@/utils/dateUtils';
-import { prisma } from '@/lib/prisma';
+import { thoughtsAPI } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Comment {
@@ -54,31 +54,8 @@ export function CommentModal({ visible, thoughtId, onClose }: CommentModalProps)
   const fetchComments = async () => {
     try {
       setLoading(true);
-      const commentsData = await prisma.comment.findMany({
-        where: { thoughtId },
-        include: {
-          user: {
-            select: {
-              displayName: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'asc' },
-      });
-
-      const formattedComments: Comment[] = commentsData.map(comment => ({
-        id: comment.id,
-        content: comment.content,
-        userId: comment.userId,
-        user: {
-          displayName: comment.user.displayName || 'Anonymous',
-          email: comment.user.email,
-        },
-        createdAt: comment.createdAt.toISOString(),
-      }));
-
-      setComments(formattedComments);
+      const commentsData = await thoughtsAPI.getComments(thoughtId);
+      setComments(commentsData);
     } catch (error) {
       console.error('Error fetching comments:', error);
     } finally {
@@ -91,34 +68,8 @@ export function CommentModal({ visible, thoughtId, onClose }: CommentModalProps)
 
     try {
       setSubmitting(true);
-      const comment = await prisma.comment.create({
-        data: {
-          content: newComment.trim(),
-          userId: user.id,
-          thoughtId,
-        },
-        include: {
-          user: {
-            select: {
-              displayName: true,
-              email: true,
-            },
-          },
-        },
-      });
-
-      const formattedComment: Comment = {
-        id: comment.id,
-        content: comment.content,
-        userId: comment.userId,
-        user: {
-          displayName: comment.user.displayName || 'Anonymous',
-          email: comment.user.email,
-        },
-        createdAt: comment.createdAt.toISOString(),
-      };
-
-      setComments(prev => [...prev, formattedComment]);
+      const comment = await thoughtsAPI.addComment(thoughtId, newComment.trim(), user.id);
+      setComments(prev => [...prev, comment]);
       setNewComment('');
     } catch (error) {
       Alert.alert('Error', 'Failed to post comment. Please try again.');

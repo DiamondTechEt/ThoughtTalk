@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Heart, MessageCircle, Share, CreditCard as Edit3, Trash2, User } from 'lucide-react-native';
 import { formatDistanceToNow } from '@/utils/dateUtils';
-import { prisma } from '@/lib/prisma';
+import { thoughtsAPI } from '@/lib/api';
 import { CommentModal } from './CommentModal';
 import { ShareModal } from './ShareModal';
 
@@ -46,21 +46,7 @@ export function ThoughtCard({
       setIsLiked(newIsLiked);
       setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
       
-      if (newIsLiked) {
-        await prisma.like.create({
-          data: {
-            userId: currentUserId,
-            thoughtId: thought.id,
-          },
-        });
-      } else {
-        await prisma.like.deleteMany({
-          where: {
-            userId: currentUserId,
-            thoughtId: thought.id,
-          },
-        });
-      }
+      await thoughtsAPI.like(thought.id, currentUserId);
       
     } catch (error) {
       // Revert on error
@@ -81,9 +67,7 @@ export function ThoughtCard({
           style: 'destructive',
           onPress: async () => {
             try {
-              await prisma.thought.delete({
-                where: { id: thought.id },
-              });
+              await thoughtsAPI.delete(thought.id);
             } catch (error) {
               Alert.alert('Error', 'Failed to delete thought. Please try again.');
               console.error('Error deleting thought:', error);
@@ -112,10 +96,8 @@ export function ThoughtCard({
 
   const refreshCommentCount = async () => {
     try {
-      const count = await prisma.comment.count({
-        where: { thoughtId: thought.id },
-      });
-      setCommentCount(count);
+      const comments = await thoughtsAPI.getComments(thought.id);
+      setCommentCount(comments.length);
     } catch (error) {
       console.error('Error refreshing comment count:', error);
     }

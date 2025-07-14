@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Check } from 'lucide-react-native';
-import { prisma } from '@/lib/prisma';
+import { usersAPI } from '@/lib/api';
 
 interface ProfileEditorProps {
   visible: boolean;
@@ -42,12 +42,9 @@ export function ProfileEditor({ visible, user, onClose }: ProfileEditorProps) {
     try {
       setIsSaving(true);
       
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          displayName: displayName.trim() || null,
-          bio: bio.trim() || null,
-        },
+      await usersAPI.update(user.id, {
+        displayName: displayName.trim() || undefined,
+        bio: bio.trim() || undefined,
       });
       
       Alert.alert('Success', 'Profile updated successfully!');

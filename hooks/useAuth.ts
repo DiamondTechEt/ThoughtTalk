@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { authenticateUser, createUser, getUserById, generateToken, verifyToken } from '@/lib/auth';
+import { authAPI } from '@/lib/api';
 import { storeToken, getToken, removeToken } from '@/lib/storage';
 
 interface User {
@@ -29,15 +29,10 @@ export function useAuth(): AuthState {
     try {
       const token = await getToken();
       if (token) {
-        const decoded = verifyToken(token);
-        if (decoded) {
-          const userData = await getUserById(decoded.userId);
-          if (userData) {
-            setUser(userData);
-          } else {
-            await removeToken();
-          }
-        } else {
+        try {
+          const { user: userData } = await authAPI.verify(token);
+          setUser(userData);
+        } catch (error) {
           await removeToken();
         }
       }
@@ -52,12 +47,7 @@ export function useAuth(): AuthState {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const userData = await authenticateUser(email, password);
-      if (!userData) {
-        throw new Error('Invalid email or password');
-      }
-      
-      const token = generateToken(userData.id);
+      const { user: userData, token } = await authAPI.signIn(email, password);
       await storeToken(token);
       
       setUser(userData);
@@ -71,8 +61,7 @@ export function useAuth(): AuthState {
   const signUp = async (email: string, password: string, displayName?: string) => {
     try {
       setLoading(true);
-      const userData = await createUser(email, password, displayName);
-      const token = generateToken(userData.id);
+      const { user: userData, token } = await authAPI.signUp(email, password, displayName);
       await storeToken(token);
       
       setUser(userData);

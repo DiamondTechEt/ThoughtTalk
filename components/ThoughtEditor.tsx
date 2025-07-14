@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Check } from 'lucide-react-native';
-import { prisma } from '@/lib/prisma';
+import { thoughtsAPI } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface ThoughtEditorProps {
@@ -58,17 +58,9 @@ export function ThoughtEditor({ visible, thought, onClose }: ThoughtEditorProps)
       setIsSaving(true);
       
       if (isEditing) {
-        await prisma.thought.update({
-          where: { id: thought.id },
-          data: { content: content.trim() },
-        });
+        await thoughtsAPI.update(thought.id, content.trim());
       } else {
-        await prisma.thought.create({
-          data: {
-            content: content.trim(),
-            userId: user.id,
-          },
-        });
+        await thoughtsAPI.create(content.trim(), user.id);
       }
       
       onClose();
